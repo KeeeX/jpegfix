@@ -40,12 +40,27 @@ export interface FieldDefinition {
   full?: boolean,
 }
 
+/**
+ * Boundaries of a JPEG content.
+ *
+ * This expect the content to have at most one thumbnail inside it.
+ */
+export interface JPEGBoundaries {
+  start: number;
+  end: number;
+  bundled?: JPEGBoundaries;
+}
+
+/**
+ * Result of a simple JPEG structure analysis
+ */
 export interface JPEGAnalyzis {
   haveStartOfFile: boolean,
   haveEndOfFile: boolean,
   thumbnailStart?: number,
   thumbnailEnd?: number,
   imageDataStart?: number,
+  imageStartOfScan?: number,
   imageDataEnd?: number,
   thumbnailAnalyzis?: JPEGAnalyzis,
 }

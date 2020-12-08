@@ -40,7 +40,7 @@ const buildFieldResult = (
 /**
  * Detect a section in a buffer.
  */
-export const findSection = (
+export const findField = (
   buffer: Uint8Array,
   marker: Marker,
   startOffset?: number,
@@ -50,6 +50,33 @@ export const findSection = (
     let i = (startOffset === undefined) ? 0 : startOffset;
     i <= maxCursorPos;
     ++i
+  ) {
+    if (
+      buffer[i] === markerStart
+      && buffer[i + 1] === marker.byte
+    ) {
+      return buildFieldResult(
+        buffer,
+        marker,
+        i,
+      );
+    }
+  }
+};
+
+export const findLastField = (
+  buffer: Uint8Array,
+  marker: Marker,
+  startOffset?: number,
+): FieldDefinition | undefined => {
+  const minCursorPos = startOffset === undefined
+    ? 0
+    : startOffset;
+  const maxCursorPos = buffer.length - markerSize;
+  for (
+    let i = maxCursorPos;
+    i >= minCursorPos;
+    --i
   ) {
     if (
       buffer[i] === markerStart
