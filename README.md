@@ -9,7 +9,7 @@ Metadata and other custom fields will be stripped.
 
 Usage
 -----
-The CLI tool have can be used to process individual images.
+The CLI tool can be used to process individual images.
 There is a built-in help, but the most useful command is:
 
 ```bash
