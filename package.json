@@ -1,6 +1,6 @@
 {
   "name": "@keeex/jpegfix",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Recovery tool to retrieve picture data from damaged jpeg files",
   "main": "lib/index.js",
   "scripts": {
