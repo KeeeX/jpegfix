@@ -1,0 +1,80 @@
+{
+  "name": "@keeex/jpegfix",
+  "version": "0.1.0",
+  "description": "Recovery tool to retrieve picture data from damaged jpeg files",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "nyc mocha src/tests/**/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/KeeeX/jpegfix.git"
+  },
+  "keywords": [
+    "jpeg",
+    "fix",
+    "cli",
+    "recovery"
+  ],
+  "author": "KeeeX SAS",
+  "contributors": [
+    {
+      "name": "Gabriel Paul \"Cley Faye\" Risterucc",
+      "email": "gabriel@keeex.net"
+    }
+  ],
+  "bin": "bin/jpegfix.js",
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "!/lib/tests/**/*"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KeeeX/jpegfix/issues"
+  },
+  "homepage": "https://github.com/KeeeX/jpegfix#readme",
+  "devDependencies": {
+    "@keeex/eslint-config": "^1.1.1",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^14.14.10",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.15.0",
+    "eslint-plugin-mocha": "^8.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "grunt": "^1.3.0",
+    "grunt-banner": "^0.6.0",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-ts": "^6.0.0-beta.22",
+    "load-grunt-tasks": "^5.1.0",
+    "mocha": "^8.2.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.1.0",
+    "typescript": "^4.1.2"
+  },
+  "nyc": {
+    "require": [
+      "esm",
+      "ts-node/register"
+    ],
+    "extension": [
+      ".ts",
+      ".js"
+    ],
+    "include": [
+      "src/**/*"
+    ],
+    "exclude": [
+      "Gruntfile.js",
+      "src/tests/**/*"
+    ],
+    "cache": true,
+    "all": true
+  },
+  "dependencies": {
+    "argparse": "^2.0.1",
+    "esm": "^3.2.25"
+  }
+}

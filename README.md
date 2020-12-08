@@ -1,8 +1,44 @@
 @keeex/jpegfix
 ==============
 
-Refcovery tool to retrieve picture data from damaged jpeg files.
+Recovery tool to retrieve picture data from damaged jpeg files.
 Basic operation is looking through the file for the essential blocks and create
 a hopefully viable output with the image content.
 
 Metadata and other custom fields will be stripped.
+
+Usage
+-----
+The CLI tool have can be used to process individual images.
+There is a built-in help, but the most useful command is:
+
+```bash
+jpegfix -i <input file>
+```
+
+It will automatically use `<basename input file>.orig.jpg` as the output.
+
+Behavior
+--------
+This tool tries to retrieve only the visual data and explicitely kills any
+"extra" sections besides these.
+
+To avoid malformed metadata actually containing a thumbnail in JPEG form, the
+algorithm first look for a plausible JPEG file inside the JPEG file, and
+excludes this area when searching actual picture data.
+Best case scenario, the expected fields can be detected and the original visual
+can be retrieved.
+The following outlines the "degraded" recovery modes that this program will
+recover:
+
+- stripping any non-essential fields
+- missing beginning of file
+- missing end of file
+- broken thumbnail messing with detection
+- fallback to the thumbnail if the original data is irrecoverable and a
+  thumbnail exists, with same process
+
+In particular, no attempt is done to save the extra metadata (EXIF/JFIF).
+
+Library usage
+-------------
