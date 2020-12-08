@@ -77,5 +77,8 @@
   "dependencies": {
     "argparse": "^2.0.1",
     "esm": "^3.2.25"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
