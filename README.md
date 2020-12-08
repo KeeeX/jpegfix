@@ -42,3 +42,20 @@ In particular, no attempt is done to save the extra metadata (EXIF/JFIF).
 
 Library usage
 -------------
+
+The library exposes two main functions, one to analyze a file and one to rebuild
+a JPEG.
+
+Here's a short example:
+
+```JavaScript
+import {analyzeJpeg, rebuildJpeg} from "@keeex/jpegfix";
+import {readFileSync} from "fs";
+
+const buffer = readFileSync("somefile.jpg");
+const analyze = analyzeJpeg(buffer);
+const rebuiltImage = rebuildJpeg(buffer);
+```
+
+Some more advanced functions can be called to customize the process, but that
+should not be necessary.
