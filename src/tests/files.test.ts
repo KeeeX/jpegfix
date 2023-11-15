@@ -1,11 +1,14 @@
-import assert from "assert";
-import {testFiles as fixtures} from "./fixtures";
-import {join} from "path";
-import {readFileSync} from "fs";
-import {rebuildJpeg} from "../index";
+import assert from "node:assert";
+import {join, dirname} from "node:path";
+import {readFileSync} from "node:fs";
+import {fileURLToPath} from "node:url";
+import {rebuildJpeg} from "../services/jpeg.js";
+import {testFiles as fixtures} from "./fixtures.js";
+
+const selfPath = dirname(fileURLToPath(import.meta.url));
 
 const getFilePath = (name: string): string => join(
-  __dirname,
+  selfPath,
   "..",
   "..",
   "res",

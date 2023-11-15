@@ -5,17 +5,17 @@ export interface Marker {
   /**
    * JPEG header's second byte
    */
-  byte: number
+  byte: number;
   /**
    * true if the marker have variable size payload defined in the next uint16
    * false if no payload
    * a numeric value for fixed size payload
    */
-  size: boolean,
+  size: boolean;
   /**
    * Set to true if it is normal to not find another field after this one
    */
-  noFollowup?: boolean,
+  noFollowup?: boolean;
 }
 
 /**
@@ -25,19 +25,19 @@ export interface FieldDefinition {
   /**
    * Start position in the buffer
    */
-  position: number,
+  position: number;
   /**
    * Position of the marker first byte
    */
-  markerPosition: number,
+  markerPosition: number;
   /**
    * Size of the detected field (if applicable)
    */
-  size?: number,
+  size?: number;
   /**
    * If the field is immediately followed by another field (unless noFollowup is set)
    */
-  full?: boolean,
+  full?: boolean;
 }
 
 /**
@@ -55,12 +55,12 @@ export interface JPEGBoundaries {
  * Result of a simple JPEG structure analysis
  */
 export interface JPEGAnalyzis {
-  haveStartOfFile: boolean,
-  haveEndOfFile: boolean,
-  thumbnailStart?: number,
-  thumbnailEnd?: number,
-  imageDataStart?: number,
-  imageStartOfScan?: number,
-  imageDataEnd?: number,
-  thumbnailAnalyzis?: JPEGAnalyzis,
+  haveStartOfFile: boolean;
+  haveEndOfFile: boolean;
+  thumbnailStart?: number;
+  thumbnailEnd?: number;
+  imageDataStart?: number;
+  imageStartOfScan?: number;
+  imageDataEnd?: number;
+  thumbnailAnalyzis?: JPEGAnalyzis;
 }

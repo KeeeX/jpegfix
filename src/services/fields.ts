@@ -1,9 +1,12 @@
-import {FieldDefinition, Marker} from "./types";
+import {
+  FieldDefinition,
+  Marker,
+} from "./types.js";
 import {
   markerStart,
   markerSize,
   fieldSizeBytesCount,
-} from "./consts";
+} from "./consts.js";
 
 /**
  * Build the result of findSection()
@@ -47,7 +50,7 @@ export const findField = (
 ): FieldDefinition | undefined => {
   const maxCursorPos = buffer.length - markerSize;
   for (
-    let i = (startOffset === undefined) ? 0 : startOffset;
+    let i = startOffset ?? 0;
     i <= maxCursorPos;
     ++i
   ) {
@@ -69,9 +72,7 @@ export const findLastField = (
   marker: Marker,
   startOffset?: number,
 ): FieldDefinition | undefined => {
-  const minCursorPos = startOffset === undefined
-    ? 0
-    : startOffset;
+  const minCursorPos = startOffset ?? 0;
   const maxCursorPos = buffer.length - markerSize;
   for (
     let i = maxCursorPos;

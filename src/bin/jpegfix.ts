@@ -1,13 +1,24 @@
+import {
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import {
+  join,
+  dirname,
+  basename,
+  extname,
+} from "node:path";
+import {fileURLToPath} from "node:url";
 import {ArgumentParser} from "argparse";
-import {rebuildJpeg} from "./index";
-import {readFileSync, writeFileSync} from "fs";
-import {join, dirname, basename, extname} from "path";
+import {rebuildJpeg} from "../services/jpeg.js";
+
+const selfPath = dirname(fileURLToPath(import.meta.url));
 
 /**
  * Read version from package.json
  */
 const getVersion = (): string => {
-  const pkg = readFileSync(join(__dirname, "..", "package.json"), "utf8");
+  const pkg = readFileSync(join(selfPath, "..", "..", "package.json"), "utf8");
   const pkgJson = JSON.parse(pkg) as Record<string, string>;
   return pkgJson.version;
 };
@@ -16,8 +27,8 @@ const getVersion = (): string => {
  * Settings from CLI
  */
 interface CLIArgs {
-  input?: string,
-  output?: string,
+  input?: string;
+  output?: string;
 }
 
 /**

@@ -1,6 +1,16 @@
-import {markers, markerSize, markerStart} from "./jpeg/consts";
-import {findField, findLastField} from "./jpeg/fields";
-import {JPEGAnalyzis, JPEGBoundaries} from "./jpeg/types";
+import {
+  markers,
+  markerSize,
+  markerStart,
+} from "./consts.js";
+import {
+  findField,
+  findLastField,
+} from "./fields.js";
+import {
+  JPEGAnalyzis,
+  JPEGBoundaries,
+} from "./types.js";
 
 /**
  * Basis for detection of JPEG content, including thumbnail
@@ -215,7 +225,7 @@ export const tryRecoverFromThumbnail = (
   ) {
     return;
   }
-  // eslint-disable-next-line no-use-before-define
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   return rebuildJpeg(
     buffer.slice(
       useAnalyzis.thumbnailStart,

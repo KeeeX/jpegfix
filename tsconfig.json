@@ -1,21 +1,33 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "target": "ES2019",
-    "module": "ES2015",
-    "lib": [],
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "composite": true,
+    "composite": false,
     "tsBuildInfoFile": "./.tsbuildinfo",
-    "strict": true,
+    "target": "es2022",
+    "module": "es2022",
+    "rootDir": "./src",
     "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "sourceMap": false,
+    "outDir": "./lib",
+    "removeComments": false,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "emitBOM": false,
+    "newLine": "lf",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
-  "include": ["./src/**/*", "Gruntfile.js"]
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
+  ],
+  "ts-node": {
+    "swc": true
+  }
 }

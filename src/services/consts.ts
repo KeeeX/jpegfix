@@ -1,4 +1,4 @@
-import {Marker} from "./types";
+import {Marker} from "./types.js";
 
 /**
  * First byte of all JPEG markers
