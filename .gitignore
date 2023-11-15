@@ -4,3 +4,4 @@
 /knip.json
 /tsconfig-build.json
 /.tsbuildinfo
+/coverage
