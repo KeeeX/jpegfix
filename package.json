@@ -8,7 +8,8 @@
     "check": "tslib check",
     "clean": "tslib clean",
     "doc": "tslib typedoc",
-    "prepack": "npm run clean && npm run build",
+    "prepack": "npm run clean && npm run build && clean-publish cleanPublish",
+    "postpack": "([ ${npm_command} = \"pack\" ] && clean-publish restore) || true",
     "start": "npm run build && bin/jpegfix.js",
     "test": "tslib test"
   },
@@ -40,6 +41,7 @@
   },
   "homepage": "https://github.com/KeeeX/jpegfix#readme",
   "devDependencies": {
+    "@keeex/clean-publish": "^1.1.1",
     "@keeex/eslint-config": "^1.11.5",
     "@keeex/tslib": "^1.16.0",
     "@swc/core": "^1.3.96",
@@ -90,5 +92,24 @@
     "exclude": [
       "src/bin/jpegfix.ts"
     ]
+  },
+  "cleanPublish": {
+    "behavior": {
+      "cleanPrepack": {
+        "package.json": [
+          {
+            "type": "json"
+          }
+        ]
+      },
+      "cleanPublish": {
+        "package.json": [
+          {
+            "type": "json",
+            "package": true
+          }
+        ]
+      }
+    }
   }
 }
