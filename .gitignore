@@ -1,6 +1,7 @@
 /node_modules
 /lib
-/.nyc_output
 /*.tgz
+/knip.json
+/tsconfig-build.json
 /.tsbuildinfo
-/.tscache
+/coverage

@@ -1,11 +1,14 @@
-import assert from "assert";
-import {testFiles as fixtures} from "./fixtures";
-import {join} from "path";
-import {readFileSync} from "fs";
-import {rebuildJpeg} from "../index";
+import assert from "node:assert";
+import * as path from "node:path";
+import * as fs from "node:fs";
+import {fileURLToPath} from "node:url";
+import * as jpegSrv from "../services/jpeg.js";
+import {testFiles as fixtures} from "./fixtures.js";
 
-const getFilePath = (name: string): string => join(
-  __dirname,
+const selfPath = path.dirname(fileURLToPath(import.meta.url));
+
+const getFilePath = (name: string): string => path.join(
+  selfPath,
   "..",
   "..",
   "res",
@@ -13,22 +16,14 @@ const getFilePath = (name: string): string => join(
   `${name}.jpg`,
 );
 
-const testFixture = (
-  source: string,
-  expected: string,
-) => {
+const testFixture = (source: string, expected: string) => {
   const sourcePath = getFilePath(source);
   const expectedPath = getFilePath(expected);
-  const sourceBuffer = readFileSync(sourcePath);
-  const expectedBuffer = readFileSync(expectedPath);
-  const rebuilt = rebuildJpeg(sourceBuffer);
-  if (!rebuilt) {
-    assert.fail();
-  }
-  assert.deepStrictEqual(
-    new Uint8Array(rebuilt),
-    new Uint8Array(expectedBuffer),
-  );
+  const sourceBuffer = fs.readFileSync(sourcePath);
+  const expectedBuffer = fs.readFileSync(expectedPath);
+  const rebuilt = jpegSrv.rebuildJpeg(sourceBuffer);
+  assert(rebuilt);
+  assert.deepStrictEqual(new Uint8Array(rebuilt), new Uint8Array(expectedBuffer));
 };
 
 const testFiles = () => {

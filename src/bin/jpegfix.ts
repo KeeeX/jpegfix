@@ -1,35 +1,32 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+import {fileURLToPath} from "node:url";
 import {ArgumentParser} from "argparse";
-import {rebuildJpeg} from "./index";
-import {readFileSync, writeFileSync} from "fs";
-import {join, dirname, basename, extname} from "path";
+import {rebuildJpeg} from "../services/jpeg.js";
 
-/**
- * Read version from package.json
- */
+const selfPath = path.dirname(fileURLToPath(import.meta.url));
+
+/** Read version from package.json */
 const getVersion = (): string => {
-  const pkg = readFileSync(join(__dirname, "..", "package.json"), "utf8");
+  const pkg = fs.readFileSync(path.join(selfPath, "..", "..", "package.json"), "utf8");
   const pkgJson = JSON.parse(pkg) as Record<string, string>;
   return pkgJson.version;
 };
 
-/**
- * Settings from CLI
- */
+/** Settings from CLI */
 interface CLIArgs {
-  input?: string,
-  output?: string,
+  input?: string;
+  output?: string;
 }
 
-/**
- * Retrieve settings from CLI
- */
+/** Retrieve settings from CLI */
 const getArgs = (): CLIArgs => {
   const parser = new ArgumentParser({
     description: "Recovery tool for broken JPEG files",
     // eslint-disable-next-line camelcase, @typescript-eslint/naming-convention
     add_help: true,
     prog: "jpegfix",
-    epilog: "ⓒ Copyright 2020 KeeeX SAS",
+    epilog: "ⓒ Copyright 2023 KeeeX SAS",
   });
   parser.add_argument("-v", "--version", {action: "version", version: getVersion()});
   parser.add_argument(
@@ -53,47 +50,35 @@ const getArgs = (): CLIArgs => {
 
 const STREAM = "-";
 
-/**
- * Retrieve input
- */
+/** Retrieve input */
 const getInputBuffer = (input: string): Uint8Array => {
-  if (input === STREAM) {
-    return readFileSync(process.stdin.fd);
-  }
-  return readFileSync(input);
+  if (input === STREAM) return fs.readFileSync(process.stdin.fd);
+  return fs.readFileSync(input);
 };
 
-/**
- * Save output
- */
+/** STDOUT file descriptor */
+const STDOUT = 1;
+
+/** Save output */
 const writeOutputBuffer = (output: string, buffer: Uint8Array): void => {
-  const STDOUT = 1;
   if (output === STREAM) {
-    writeFileSync(STDOUT, buffer);
+    fs.writeFileSync(STDOUT, buffer);
   } else {
-    writeFileSync(output, buffer);
+    fs.writeFileSync(output, buffer);
   }
 };
 
-/**
- * Sanitize input name
- */
+/** Sanitize input name */
 const computeInputName = (input?: string): string => input ?? STREAM;
 
-/**
- * Sanitize output name
- */
+/** Sanitize output name */
 const computeOutputName = (inputName: string, output?: string): string => {
-  if (output !== undefined) {
-    return output;
-  }
-  if (inputName === STREAM) {
-    return STREAM;
-  }
-  const ext = extname(inputName);
-  const dir = dirname(inputName);
-  const base = basename(inputName, ext);
-  return join(dir, `${base}.orig${ext}`);
+  if (output !== undefined) return output;
+  if (inputName === STREAM) return STREAM;
+  const ext = path.extname(inputName);
+  const dir = path.dirname(inputName);
+  const base = path.basename(inputName, ext);
+  return path.join(dir, `${base}.orig${ext}`);
 };
 
 const main = () => {
@@ -102,9 +87,7 @@ const main = () => {
   const outputName = computeOutputName(inputName, args.output);
   const inputBuffer = getInputBuffer(inputName);
   const outBuffer = rebuildJpeg(inputBuffer);
-  if (!outBuffer) {
-    throw new Error("Could not recover input file");
-  }
+  if (!outBuffer) throw new Error("Could not recover input file");
   writeOutputBuffer(outputName, outBuffer);
 };
 
