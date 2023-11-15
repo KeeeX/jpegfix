@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    ".tsbuildinfo": true,
+    ".vscode": true,
+    "coverage": true,
+    "knip.json": true,
+    "lib": true,
+    "node_modules": true
+  }
+}
