@@ -49,7 +49,7 @@ export interface JPEGBoundaries {
 /**
  * Result of a simple JPEG structure analysis.
  *
- * @internal
+ * @public
  */
 export interface JPEGAnalyzis {
   haveStartOfFile: boolean;
