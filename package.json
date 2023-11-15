@@ -95,7 +95,13 @@
   },
   "cleanPublish": {
     "behavior": {
-      "cleanPrepack": {},
+      "cleanPrepack": {
+        "package.json": [
+          {
+            "type": "json"
+          }
+        ]
+      },
       "cleanPublish": {
         "package.json": [
           {
