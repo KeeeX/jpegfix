@@ -5,3 +5,4 @@
 /tsconfig-build.json
 /.tsbuildinfo
 /coverage
+/apidoc

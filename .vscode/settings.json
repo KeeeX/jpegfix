@@ -2,6 +2,7 @@
   "files.exclude": {
     ".tsbuildinfo": true,
     ".vscode": true,
+    "apidoc": true,
     "coverage": true,
     "knip.json": true,
     "lib": true,
