@@ -12,9 +12,7 @@ import {
   JPEGBoundaries,
 } from "./types.js";
 
-/**
- * Basis for detection of JPEG content, including thumbnail
- */
+/** Basis for detection of JPEG content, including thumbnail */
 const getRawJpegBoundaries = (
   buffer: Uint8Array,
   startOffset?: number,
@@ -23,26 +21,14 @@ const getRawJpegBoundaries = (
   const subBuffer = buffer.slice(startOffset, endOffset);
   const startSection = findField(subBuffer, markers.soi);
   const endSection = findField(subBuffer, markers.eoi, startSection?.position);
-  if (!startSection || !endSection) {
-    return;
-  }
+  if (!startSection || !endSection) return;
   const start = startSection.markerPosition;
   const end = endSection.position;
-  const bundled = getRawJpegBoundaries(
-    subBuffer,
-    start + markerSize,
-    end - markerSize,
-  );
-  return {
-    start,
-    end,
-    bundled,
-  };
+  const bundled = getRawJpegBoundaries(subBuffer, start + markerSize, end - markerSize);
+  return {start, end, bundled};
 };
 
-/**
- * Try to find something in a really broken JPEG
- */
+/** Try to find something in a really broken JPEG */
 const getWithoutFullBoundaries = (buffer: Uint8Array): JPEGBoundaries => {
   // Worst case: no single full start/stop section
   // Check if there's an EOI somewhere that is followed by potential image data in case of a
@@ -64,28 +50,20 @@ const getWithoutFullBoundaries = (buffer: Uint8Array): JPEGBoundaries => {
   }
   // No EOI, try to grab the last "plausible" DQT entries and start with them
   let previousCursor = findLastField(buffer, markers.dqt);
-  if (!previousCursor) {
-    // Nothing to find here
-    return {start: 0, end: buffer.length};
-  }
+  // Nothing to find here
+  if (!previousCursor) return {start: 0, end: buffer.length};
   let safety = 100;
   do {
     const cursor = findLastField(buffer.slice(0, previousCursor.markerPosition), markers.dqt);
-    if (!cursor) {
-      break;
-    }
-    if (cursor.position + (cursor.size ?? 1) !== previousCursor.markerPosition) {
-      break;
-    }
+    if (!cursor) break;
+    if (cursor.position + (cursor.size ?? 1) !== previousCursor.markerPosition) break;
     previousCursor = cursor;
   } while (--safety);
   // Hopefully we got the "right" DQT
   return {start: previousCursor.markerPosition, end: buffer.length};
 };
 
-/**
- * Make sure there isn't a reasonable-looking jpeg outside of the detected boundaries
- */
+/** Make sure there isn't a reasonable-looking jpeg outside of the detected boundaries */
 const getWithPossibleThumbnail = (
   buffer: Uint8Array,
   boundaries: JPEGBoundaries,
@@ -103,44 +81,30 @@ const getWithPossibleThumbnail = (
   return boundaries;
 };
 
-/**
- * Detect the actually expected boundaries of JPEG, including broken start/stop
- */
+/** Detect the actually expected boundaries of JPEG, including broken start/stop*/
 const getJpegBoundaries = (buffer: Uint8Array): JPEGBoundaries => {
   const fullBoundaries = getRawJpegBoundaries(buffer);
-  if (!fullBoundaries) {
-    // Borked
-    return getWithoutFullBoundaries(buffer);
-  }
-  if (fullBoundaries.bundled) {
-    // There's a probable thumbnail, just use that
-    return fullBoundaries;
-  }
-  if (fullBoundaries.start === 0 && fullBoundaries.end === buffer.length) {
-    return fullBoundaries;
-  }
+  // Borked
+  if (!fullBoundaries) return getWithoutFullBoundaries(buffer);
+  // There's a probable thumbnail, just use that
+  if (fullBoundaries.bundled) return fullBoundaries;
+  if (fullBoundaries.start === 0 && fullBoundaries.end === buffer.length) return fullBoundaries;
   // Either there's no thumbnail and weird noise before/after the file, or a thumbnail with missing
   // soi/eoi
   return getWithPossibleThumbnail(buffer, fullBoundaries);
 };
 
 /**
- * Return the analysis of the JPEG buffer
+ * Return the analysis of the JPEG buffer.
+ *
+ * @public
  */
-export const analyzeJpeg = (
-  buffer: Uint8Array,
-): JPEGAnalyzis => {
+export const analyzeJpeg = (buffer: Uint8Array): JPEGAnalyzis => {
   // First look for a full JPEG inside the buffer
   const boundaries = getJpegBoundaries(buffer);
-  const imageRecoveryStart = boundaries.bundled
-    ? boundaries.bundled.end
-    : boundaries.start;
+  const imageRecoveryStart = boundaries.bundled ? boundaries.bundled.end : boundaries.start;
   const dqtField = findField(buffer, markers.dqt, imageRecoveryStart);
-  const sosField = findField(
-    buffer,
-    markers.sos,
-    dqtField?.position,
-  );
+  const sosField = findField(buffer, markers.sos, dqtField?.position);
   const haveEndOfFile = (
     buffer[boundaries.end - 1] === markers.eoi.byte
     && buffer[boundaries.end - markerSize] === markerStart
@@ -154,16 +118,15 @@ export const analyzeJpeg = (
     imageStartOfScan: sosField?.markerPosition,
     imageDataEnd: boundaries.end - (haveEndOfFile ? markerSize : 0),
     thumbnailAnalyzis: boundaries.bundled
-      ? analyzeJpeg(buffer.slice(
-        boundaries.bundled.start,
-        boundaries.bundled.end,
-      ))
+      ? analyzeJpeg(buffer.slice(boundaries.bundled.start, boundaries.bundled.end))
       : undefined,
   };
 };
 
 /**
- * If there seems to be enough data to get the image, do it
+ * If there seems to be enough data to get the image, do it.
+ *
+ * @public
  */
 export const tryRecoverFullImageData = (
   buffer: Uint8Array,
@@ -182,37 +145,28 @@ export const tryRecoverFullImageData = (
   outputBuffer[0] = markerStart;
   outputBuffer[1] = markers.soi.byte;
   outputBuffer.set(
-    buffer.slice(
-      analyzis.imageDataStart,
-      analyzis.imageDataEnd + markerSize,
-    ),
+    buffer.slice(analyzis.imageDataStart, analyzis.imageDataEnd + markerSize),
     markerSize,
   );
   return outputBuffer;
 };
 
-/**
- * Return the actual image data size, if any
- */
+/** Return the actual image data size, if any */
 const getContentSize = (analyzis: JPEGAnalyzis): number | undefined => {
-  if (analyzis.imageStartOfScan === undefined || analyzis.imageDataEnd === undefined) {
-    return;
-  }
+  if (analyzis.imageStartOfScan === undefined || analyzis.imageDataEnd === undefined) return;
   return analyzis.imageDataEnd - analyzis.imageStartOfScan;
 };
 
-/**
- * Return the size of the thumbnail actual image data, if any
- */
+/** Return the size of the thumbnail actual image data, if any */
 const getThumbnailContentSize = (analyzis: JPEGAnalyzis): number | undefined => {
-  if (!analyzis.thumbnailAnalyzis) {
-    return;
-  }
+  if (!analyzis.thumbnailAnalyzis) return;
   return getContentSize(analyzis.thumbnailAnalyzis);
 };
 
 /**
- * Return the thumbnail content if it seems fine
+ * Return the thumbnail content if it seems fine.
+ *
+ * @public
  */
 export const tryRecoverFromThumbnail = (
   buffer: Uint8Array,
@@ -227,17 +181,12 @@ export const tryRecoverFromThumbnail = (
   }
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   return rebuildJpeg(
-    buffer.slice(
-      useAnalyzis.thumbnailStart,
-      useAnalyzis.thumbnailEnd,
-    ),
+    buffer.slice(useAnalyzis.thumbnailStart, useAnalyzis.thumbnailEnd),
     useAnalyzis.thumbnailAnalyzis,
   );
 };
 
-/**
- * If it seems we're missing a short part at the end of the bytestream, recover that.
- */
+/** If it seems we're missing a short part at the end of the bytestream, recover that. */
 const tryRecoverPartialImageData = (
   buffer: Uint8Array,
   analyzis: JPEGAnalyzis,
@@ -250,9 +199,7 @@ const tryRecoverPartialImageData = (
     return;
   }
   const imageContentSize = getContentSize(analyzis);
-  if (!imageContentSize) {
-    return;
-  }
+  if (!imageContentSize) return;
   const thumbnailSize = getThumbnailContentSize(analyzis);
   if (thumbnailSize && thumbnailSize >= imageContentSize) {
     // Thumbnail seems to have more remnants than the actual data
@@ -262,28 +209,22 @@ const tryRecoverPartialImageData = (
   const outputBuffer = new Uint8Array(outputSize);
   outputBuffer[0] = markerStart;
   outputBuffer[1] = markers.soi.byte;
-  outputBuffer.set(
-    buffer.slice(
-      analyzis.imageDataStart,
-      analyzis.imageDataEnd,
-    ),
-    markerSize,
-  );
+  outputBuffer.set(buffer.slice(analyzis.imageDataStart, analyzis.imageDataEnd), markerSize);
   outputBuffer[outputSize - markerSize] = markerStart;
   outputBuffer[outputSize - 1] = markers.eoi.byte;
   return outputBuffer;
 };
 
 /**
- * Try to rebuild a single JPEG image
+ * Try to rebuild a single JPEG image.
+ *
+ * @public
  */
 export const rebuildJpeg = (
   buffer: Uint8Array,
   analyzis?: JPEGAnalyzis,
 ): Uint8Array | undefined => {
-  const useAnalyzis = analyzis
-    ? analyzis
-    : analyzeJpeg(buffer);
+  const useAnalyzis = analyzis ? analyzis : analyzeJpeg(buffer);
   return tryRecoverFullImageData(buffer, useAnalyzis)
     ?? tryRecoverPartialImageData(buffer, useAnalyzis)
     ?? tryRecoverFromThumbnail(buffer, useAnalyzis);

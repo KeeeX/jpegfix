@@ -1,10 +1,11 @@
+/* c8 ignore start */
 /**
- * A sequence to look for in a file
+ * A sequence to look for in a file.
+ *
+ * @internal
  */
 export interface Marker {
-  /**
-   * JPEG header's second byte
-   */
+  /** JPEG header's second byte */
   byte: number;
   /**
    * true if the marker have variable size payload defined in the next uint16
@@ -12,31 +13,23 @@ export interface Marker {
    * a numeric value for fixed size payload
    */
   size: boolean;
-  /**
-   * Set to true if it is normal to not find another field after this one
-   */
+  /** Set to true if it is normal to not find another field after this one */
   noFollowup?: boolean;
 }
 
 /**
- * Position and size (if applicable) of a field
+ * Position and size (if applicable) of a field.
+ *
+ * @internal
  */
 export interface FieldDefinition {
-  /**
-   * Start position in the buffer
-   */
+  /** Start position in the buffer */
   position: number;
-  /**
-   * Position of the marker first byte
-   */
+  /** Position of the marker first byte */
   markerPosition: number;
-  /**
-   * Size of the detected field (if applicable)
-   */
+  /** Size of the detected field (if applicable) */
   size?: number;
-  /**
-   * If the field is immediately followed by another field (unless noFollowup is set)
-   */
+  /** If the field is immediately followed by another field (unless noFollowup is set) */
   full?: boolean;
 }
 
@@ -44,6 +37,8 @@ export interface FieldDefinition {
  * Boundaries of a JPEG content.
  *
  * This expect the content to have at most one thumbnail inside it.
+ *
+ * @internal
  */
 export interface JPEGBoundaries {
   start: number;
@@ -52,7 +47,9 @@ export interface JPEGBoundaries {
 }
 
 /**
- * Result of a simple JPEG structure analysis
+ * Result of a simple JPEG structure analysis.
+ *
+ * @internal
  */
 export interface JPEGAnalyzis {
   haveStartOfFile: boolean;
@@ -64,3 +61,4 @@ export interface JPEGAnalyzis {
   imageDataEnd?: number;
   thumbnailAnalyzis?: JPEGAnalyzis;
 }
+/* c8 ignore stop */

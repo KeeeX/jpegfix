@@ -8,9 +8,7 @@ import {
   fieldSizeBytesCount,
 } from "./consts.js";
 
-/**
- * Build the result of findSection()
- */
+/** Build the result of findSection() */
 const buildFieldResult = (
   buffer: Uint8Array,
   marker: Marker,
@@ -32,16 +30,13 @@ const buildFieldResult = (
   if (size !== undefined && marker.noFollowup === true) {
     full = buffer[position + size] === markerStart;
   }
-  return {
-    markerPosition,
-    position,
-    size,
-    full,
-  };
+  return {markerPosition, position, size, full};
 };
 
 /**
  * Detect a section in a buffer.
+ *
+ * @internal
  */
 export const findField = (
   buffer: Uint8Array,
@@ -49,24 +44,14 @@ export const findField = (
   startOffset?: number,
 ): FieldDefinition | undefined => {
   const maxCursorPos = buffer.length - markerSize;
-  for (
-    let i = startOffset ?? 0;
-    i <= maxCursorPos;
-    ++i
-  ) {
-    if (
-      buffer[i] === markerStart
-      && buffer[i + 1] === marker.byte
-    ) {
-      return buildFieldResult(
-        buffer,
-        marker,
-        i,
-      );
+  for (let i = startOffset ?? 0; i <= maxCursorPos; ++i) {
+    if (buffer[i] === markerStart && buffer[i + 1] === marker.byte) {
+      return buildFieldResult(buffer, marker, i);
     }
   }
 };
 
+/** @internal */
 export const findLastField = (
   buffer: Uint8Array,
   marker: Marker,
@@ -74,20 +59,9 @@ export const findLastField = (
 ): FieldDefinition | undefined => {
   const minCursorPos = startOffset ?? 0;
   const maxCursorPos = buffer.length - markerSize;
-  for (
-    let i = maxCursorPos;
-    i >= minCursorPos;
-    --i
-  ) {
-    if (
-      buffer[i] === markerStart
-      && buffer[i + 1] === marker.byte
-    ) {
-      return buildFieldResult(
-        buffer,
-        marker,
-        i,
-      );
+  for (let i = maxCursorPos; i >= minCursorPos; --i) {
+    if (buffer[i] === markerStart && buffer[i + 1] === marker.byte) {
+      return buildFieldResult(buffer, marker, i);
     }
   }
 };
